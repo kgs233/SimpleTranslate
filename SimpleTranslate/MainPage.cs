@@ -23,14 +23,10 @@ public sealed partial class MainPage : Page
                         new TranslateBoxPanel()
                             .Grid(row: 1),
                         new ProgressBar()
-                            .Grid(row: 3)
+                            .Grid(row: 2)
                             .Name(out ProgressBar bar)
                             .IsIndeterminate(true)
-                            .Visibility(x => 
-                                x
-                                 .Binding(() => vm.IsTranslating)
-                                 .OneWay()
-                            )
+                            .Visibility(() => vm.IsTranslating)
                             .VerticalAlignment(VerticalAlignment.Top)
                     )
             )

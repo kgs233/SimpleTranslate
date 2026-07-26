@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
+using Microsoft.UI.Dispatching;
+
 namespace SimpleTranslate;
 
 public record TranslationRequest
@@ -34,7 +36,7 @@ public static class HttpUtil
     private static readonly HttpClient client = new();
 
 
-    public static async void SeedTranslation()
+    public static async Task SendTranslation()
     {
         if (TranslateState.Instance.SourceText == "" ||
             TranslateState.Instance.SourceLanguage == "" ||
@@ -43,32 +45,38 @@ public static class HttpUtil
             return;
         }
 
-        TranslateState.Instance.IsTranslating = true;
-        var request = new TranslationRequest
+        try
         {
-            Text = TranslateState.Instance.SourceText,
-            SourceLang = TranslateState.Instance.SourceLanguage,
-            TargetLang = TranslateState.Instance.TargetLanguage
-        };
+            TranslateState.Instance.IsTranslating = true;
+            var request = new TranslationRequest
+            {
+                Text = TranslateState.Instance.SourceText,
+                SourceLang = TranslateState.Instance.SourceLanguage,
+                TargetLang = TranslateState.Instance.TargetLanguage
+            };
 
-        string url = $"http://{SettingsModel.API}/translate";
+            string url = $"http://{SettingsModel.API}/translate";
 
-        HttpResponseMessage response = await client.PostAsJsonAsync(
-            url,
-            request
-        );
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception(
-                $"Translation API returned {response.StatusCode}"
+            HttpResponseMessage response = await client.PostAsJsonAsync(
+                url,
+                request
             );
-        }
 
-        TranslationResponse? result =
-            await response.Content.ReadFromJsonAsync<TranslationResponse>();
-        
-        TranslateState.Instance.ResultText = result?.TranslatedText ?? "";
-        TranslateState.Instance.IsTranslating = false;
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    $"Translation API returned {response.StatusCode}"
+                );
+            }
+
+            TranslationResponse? result =
+                await response.Content.ReadFromJsonAsync<TranslationResponse>();
+
+            TranslateState.Instance.ResultText = result?.TranslatedText ?? "";
+        }
+        finally
+        {
+            TranslateState.Instance.IsTranslating = false;
+        }
     }
 }

@@ -1,11 +1,14 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Microsoft.UI.Dispatching;
 
 namespace SimpleTranslate;
 
 public sealed partial class TranslateBoxPanel : Grid
 {
     private readonly Subject<string> sourceChanged = new();
+    private readonly DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
 
     public TranslateBoxPanel()
     {
@@ -28,7 +31,7 @@ public sealed partial class TranslateBoxPanel : Grid
                                 .Background(new SolidColorBrush(Colors.Transparent))
                                 .FontSize(28)
                                 .PlaceholderText("输入文本")
-                                .Text(x => 
+                                .Text(x =>
                                     x
                                      .Binding(() => vm.SourceText)
                                      .UpdateSourceTrigger(UpdateSourceTrigger.PropertyChanged)
@@ -55,7 +58,7 @@ public sealed partial class TranslateBoxPanel : Grid
                         )
 
                 );
-
+            
             SourceBox.TextChanging += (_, _) =>
             {
                 sourceChanged.OnNext(SourceBox.Text);
@@ -64,10 +67,12 @@ public sealed partial class TranslateBoxPanel : Grid
             sourceChanged
                 .Throttle(TimeSpan.FromMilliseconds(SettingsModel.WaitTime))
                 .DistinctUntilChanged()
-                .Subscribe(async text =>
-                {
-                    HttpUtil.SeedTranslation();
-                });
+                .ObserveOn(new DispatcherQueueScheduler(dispatcherQueue))
+                .SelectMany(text =>
+                    Observable.FromAsync(() =>
+                    HttpUtil.SendTranslation()
+                ))
+                .Subscribe();
         });
     }
 }

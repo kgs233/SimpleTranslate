@@ -61,14 +61,14 @@ public sealed partial class TranslateToolbar : Grid
                         )
                 );
 
-            SourceLanguageBox.SelectionChanged += (_, _) =>
+            SourceLanguageBox.SelectionChanged += async (_, _) =>
             {
-                HttpUtil.SeedTranslation();
+                await HttpUtil.SendTranslation();
             };
 
-            TargetLanguageBox.SelectionChanged += (_, _) =>
+            TargetLanguageBox.SelectionChanged += async (_, _) =>
             {
-                HttpUtil.SeedTranslation();
+                await HttpUtil.SendTranslation();
             };
         });
     }

@@ -55,7 +55,7 @@ public static class HttpUtil
                 TargetLang = TranslateState.Instance.TargetLanguage
             };
 
-            string url = $"http://{SettingsModel.API}/translate";
+            string url = $"http://{SettingsModel.Instance.API}/translate";
 
             HttpResponseMessage response = await client.PostAsJsonAsync(
                 url,

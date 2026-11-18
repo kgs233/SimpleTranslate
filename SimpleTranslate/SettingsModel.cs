@@ -2,21 +2,26 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SimpleTranslate;
 
-public class SettingsModel : ObservableObject
+public partial class SettingsModel : ObservableObject
 {
     public static SettingsModel Instance { get; } = new();
+    [ObservableProperty]
+    public partial string LanguageListPath { get; set; } = TryGet("LanguageList", out string l) ? l : $"{AppContext.BaseDirectory}/LanguageList.csv";
 
-    public static string API
+    [ObservableProperty]
+    public partial string API { get; set; } = TryGet("TranslateAPI", out string api) ? api :  "127.0.0.1:54413";
+
+    partial void OnAPIChanged(string value)
     {
-        get => TryGet("TranslateAPI", out string v) ? v : "127.0.0.1:54413";
-
-        set => Set("TranslateAPI", value);
+        Set("TranslateAPI", value);
     }
 
-    public static int WaitTime
+    [ObservableProperty]
+    public partial int WaitTime { get; set; } = TryGet("TranslateWaitTime", out int t) ? t : 2000;
+
+    partial void OnWaitTimeChanged(int value)
     {
-        get => TryGet("WaitTime", out int v) ? v : 2000;
-        set => Set("TranslateAPI", value);
+        Set("TranslateWaitTime", value);
     }
 
     private static bool TryGet<T>(string key, out T value)

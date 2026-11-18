@@ -7,7 +7,7 @@ import ctranslate2
 
 app = FastAPI(title="Simple Translate API", description="")
 
-MODEL_PATH = "C:\\Users\\heero\\.cache\\huggingface\\hub\\models--OpenNMT--nllb-200-distilled-1.3B-ct2-int8\\snapshots\\70f572adafa4794890ce7826156a4209717855af"
+MODEL_PATH = "C:\\Users\\heero\\Source\\SimpleTranslate\\python\\model\\"
 
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)

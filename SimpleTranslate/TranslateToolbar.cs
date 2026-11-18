@@ -2,10 +2,7 @@ namespace SimpleTranslate;
 
 public sealed partial class TranslateToolbar : Grid
 {
-    public static string[] LanguageList =
-    [
-        
-    ];
+    public static readonly string[] LanguageList = CsvReader.Read(SettingsModel.Instance.LanguageListPath);
 
     public TranslateToolbar()
     {
@@ -30,10 +27,7 @@ public sealed partial class TranslateToolbar : Grid
                         .Grid(column: 0)
                         .Width(150)
                         .PlaceholderText("源语言")
-                        .Items(
-                            "zho_Hans",
-                            "eng_Latn"
-                        )
+                        .Items(LanguageList)
                         .SelectedItem(x => x.Binding(() => vm.SourceLanguage).TwoWay()),
                     new Button()
                         .Grid(column: 1)
@@ -47,10 +41,7 @@ public sealed partial class TranslateToolbar : Grid
                         .Grid(column: 2)
                         .Width(150)
                         .PlaceholderText("目标语言")
-                        .Items(
-                            "zho_Hans",
-                            "eng_Latn"
-                        )
+                        .Items(LanguageList)
                         .SelectedItem(x => x.Binding(() => vm.TargetLanguage).TwoWay()),
                     new Button()
                         .Grid(column: 3)

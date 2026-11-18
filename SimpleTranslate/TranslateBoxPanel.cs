@@ -65,7 +65,7 @@ public sealed partial class TranslateBoxPanel : Grid
             };
 
             sourceChanged
-                .Throttle(TimeSpan.FromMilliseconds(SettingsModel.WaitTime))
+                .Throttle(TimeSpan.FromMilliseconds(SettingsModel.Instance.WaitTime))
                 .DistinctUntilChanged()
                 .ObserveOn(new DispatcherQueueScheduler(dispatcherQueue))
                 .SelectMany(text =>
